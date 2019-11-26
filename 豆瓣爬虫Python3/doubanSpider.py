@@ -40,24 +40,27 @@ def book_spider(book_tag):
         try:
             req = urllib.request.Request(url, headers=hds[page_num%len(hds)])
             source_code = urllib.request.urlopen(req).read()
-            plain_text=str(source_code)   
+            plain_text= source_code 
 
         except (urllib.request.HTTPError, urllib.request.URLError) as e:
             print (e)
             continue
   
         ##Previous Version, IP is easy to be Forbidden
-        source_code = requests.get(url) 
-        plain_text = source_code.text  
-
-        soup = BeautifulSoup(plain_text)
-        list_soup = soup.find('div', {'class': 'mod book-list'})
+        #source_code = requests.get(url) 
+        #plain_text = source_code.text  
+          
+        soup = BeautifulSoup(plain_text, 'html.parser')
         
+    
+        list_soup = soup.find('div', {'class': 'mod book-list'})
+     
         try_times+=1
         if list_soup==None and try_times<200:
             continue
         elif list_soup==None or len(list_soup)<=1:
             break # Break when no informatoin got after 200 times requesting
+
         
         for book_info in list_soup.findAll('dd'):
             title = book_info.find('a', {'class':'title'}).string.strip()
